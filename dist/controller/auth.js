@@ -12,11 +12,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postLogin = void 0;
+exports.postLogin = exports.getToken = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const usuario_1 = __importDefault(require("../models/usuario"));
 const jwt_1 = __importDefault(require("../helpers/jwt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const getToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //Leer el token
+    const token = req.header('x-token');
+    if (!token) {
+        return res.status(404).json({
+            ok: false,
+            msg: 'No existe el token...'
+        });
+    }
+    try {
+        const uid = jsonwebtoken_1.default.verify(token, 'Sofia261fjshf.kjshfkjdfhs@fhkjsghfkjas');
+        // console.log(uid);
+        res.json({
+            ok: true,
+            token
+        });
+    }
+    catch (error) {
+        res.status(401).json({
+            ok: false,
+            msg: 'Token no valido'
+        });
+    }
+});
+exports.getToken = getToken;
 const postLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //console.log('hola');
     const { email, password } = req.body;
     try {
         const existeEmail = yield usuario_1.default.findOne({
